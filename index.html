@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+    <head>
+        <base target="_top" />
+        <meta name="author" content="Takk™ Innovate Studio" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@material-design-icons/font@1.0.0/iconfont.min.css"
+        />
+        <style>
+            body {
+                font-family: "Inter", sans-serif;
+                font-optical-sizing: auto;
+                font-variation-settings: "slnt" 0;
+                margin: 0;
+                padding: 0;
+                background-color: #edf2fa;
+            }
+            .container {
+                margin: 0 auto;
+                padding: 25px;
+            }
+            h2 {
+                color: #1a73e8;
+                margin-top: 0;
+                margin-bottom: 24px;
+                font-weight: 500;
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: #5f6368;
+                font-size: 14px;
+            }
+            input[type="text"] {
+                width: 94%;
+                padding: 10px;
+                border: 1px solid #dadce0;
+                border-radius: 4px;
+                font-size: 16px;
+                transition: border-color 0.3s;
+            }
+            input[type="text"]:focus {
+                border-color: #1a73e8;
+                outline: none;
+            }
+            button {
+                width: 100%;
+                background-color: #1a73e8;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            button:hover {
+                background-color: #185abc;
+            }
+            .material-icons {
+                vertical-align: middle;
+                margin-right: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h2>
+                <i class="material-icons">settings</i>Trello Integration
+                Settings
+            </h2>
+            <div class="form-group">
+                <label for="apiKey"
+                    ><i class="material-icons">vpn_key</i>Trello API Key:</label
+                >
+                <input type="text" id="apiKey" name="apiKey" />
+            </div>
+            <div class="form-group">
+                <label for="secretKey"
+                    ><i class="material-icons">vpn_key</i>Trello Secret
+                    Key:</label
+                >
+                <input type="text" id="secretKey" name="secretKey" />
+            </div>
+            <div class="form-group">
+                <label for="apiToken"
+                    ><i class="material-icons">lock</i>Trello API Token:</label
+                >
+                <input type="text" id="apiToken" name="apiToken" />
+            </div>
+            <div class="form-group">
+                <label for="boardId"
+                    ><i class="material-icons">dashboard</i>Trello Board
+                    ID:</label
+                >
+                <input type="text" id="boardId" name="boardId" />
+            </div>
+            <div class="form-group">
+                <label for="sheetId"
+                    ><i class="material-icons">table_chart</i>Google Sheet
+                    ID:</label
+                >
+                <input type="text" id="sheetId" name="sheetId" />
+            </div>
+            <button onclick="saveSettings()">
+                <i class="material-icons">save</i>Save Settings
+            </button>
+        </div>
+
+        <script>
+            // Load existing settings
+            google.script.run
+                .withSuccessHandler(function (settings) {
+                    document.getElementById("apiKey").value =
+                        settings.TRELLO_API_KEY || "";
+                    document.getElementById("secretKey").value =
+                        settings.TRELLO_SECRET_KEY || "";
+                    document.getElementById("apiToken").value =
+                        settings.TRELLO_API_TOKEN || "";
+                    document.getElementById("boardId").value =
+                        settings.TRELLO_BOARD_ID || "";
+                    document.getElementById("sheetId").value =
+                        settings.SHEET_ID || "";
+                })
+                .getSettings();
+
+            // Save settings
+            function saveSettings() {
+                var settings = {
+                    TRELLO_API_KEY: document.getElementById("apiKey").value,
+                    TRELLO_SECRET_KEY:
+                        document.getElementById("secretKey").value,
+                    TRELLO_API_TOKEN: document.getElementById("apiToken").value,
+                    TRELLO_BOARD_ID: document.getElementById("boardId").value,
+                    SHEET_ID: document.getElementById("sheetId").value,
+                };
+
+                google.script.run
+                    .withSuccessHandler(function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            google.script.host.close();
+                        } else {
+                            alert("Error saving settings: " + response.message);
+                        }
+                    })
+                    .saveSettings(settings);
+            }
+        </script>
+    </body>
+</html>
