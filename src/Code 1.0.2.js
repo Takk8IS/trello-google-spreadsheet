@@ -1251,102 +1251,141 @@ function generateReports() {
         return;
     }
 
-    var reportSheet = ss.getSheetByName("Report");
-    if (!reportSheet) {
-        reportSheet = ss.insertSheet("Report");
-    }
+    var reportSheet = ss.getSheetByName("Report") || ss.insertSheet("Report");
     reportSheet.clear();
-
-    var row = 1;
 
     // Add report title
     reportSheet
-        .getRange(row, 1)
+        .getRange("A1")
         .setValue("Trello Board and Sales Analysis Report")
         .setFontWeight("bold")
         .setFontSize(16);
-    row++;
 
     // Add date of report
     reportSheet
-        .getRange(row, 1)
+        .getRange("A2")
         .setValue("Report generated on: " + new Date().toLocaleString());
-    row++;
 
     // Add summary statistics
     var trelloData = trelloDataSheet.getDataRange().getValues();
     var salesAnalysisData = salesAnalysisSheet.getDataRange().getValues();
 
-    // Subtract 1 for header row
-    var totalCards = trelloData.length - 1;
-    var totalSales = 0;
+    var totalCards = trelloData.length - 1; // Subtract 1 for header row
+    var totalSales = salesAnalysisData[2][1]; // Assuming total sales is in B3
 
-    // Find total sales in salesAnalysisData
-    var totalSalesRow = salesAnalysisData.find(
-        (row) => row[0] === "Total Sales:",
+    reportSheet.getRange("A4").setValue("Total Cards: " + totalCards);
+    reportSheet.getRange("A5").setValue("Total Sales: " + totalSales);
+
+    // Add monthly sales summary
+    var monthlySalesIndex = salesAnalysisData.findIndex(
+        (row) => row[0] === "Monthly Sales:",
     );
-    if (totalSalesRow) {
-        totalSales = totalSalesRow[1];
-    }
-
-    row++;
-    reportSheet.getRange(row, 1).setValue("Total Cards: " + totalCards);
-    row++;
-    reportSheet.getRange(row, 1).setValue("Total Sales: " + totalSales);
-    row++;
-
-    // Function to add a section to the report
-    function addSection(title, dataIndex) {
-        row++;
-        reportSheet.getRange(row, 1).setValue(title);
-        row++;
-        if (dataIndex !== -1) {
-            for (
-                var i = dataIndex + 1;
-                i < salesAnalysisData.length && salesAnalysisData[i][0] !== "";
-                i++
-            ) {
-                reportSheet.getRange(row, 1).setValue(salesAnalysisData[i][0]);
-                reportSheet.getRange(row, 2).setValue(salesAnalysisData[i][1]);
-                row++;
-            }
+    if (monthlySalesIndex !== -1) {
+        reportSheet.getRange("A7").setValue("Monthly Sales Summary:");
+        var row = 8;
+        for (
+            var i = monthlySalesIndex + 1;
+            i < salesAnalysisData.length && salesAnalysisData[i][0] !== "";
+            i++
+        ) {
+            reportSheet.getRange(row, 1).setValue(salesAnalysisData[i][0]);
+            reportSheet.getRange(row, 2).setValue(salesAnalysisData[i][1]);
+            row++;
         }
     }
 
-    // Add sections
-    addSection(
-        "Monthly Sales Summary:",
-        salesAnalysisData.findIndex((row) => row[0] === "Monthly Sales:"),
+    // Add sales by entry channel
+    var entryChannelIndex = salesAnalysisData.findIndex(
+        (row) => row[0] === "Sales by Entry Channel:",
     );
-    addSection(
-        "Sales by Entry Channel:",
-        salesAnalysisData.findIndex(
-            (row) => row[0] === "Sales by Entry Channel:",
-        ),
+    if (entryChannelIndex !== -1) {
+        reportSheet
+            .getRange("A" + (row + 2))
+            .setValue("Sales by Entry Channel:");
+        row += 3;
+        for (
+            var i = entryChannelIndex + 1;
+            i < salesAnalysisData.length && salesAnalysisData[i][0] !== "";
+            i++
+        ) {
+            reportSheet.getRange(row, 1).setValue(salesAnalysisData[i][0]);
+            reportSheet.getRange(row, 2).setValue(salesAnalysisData[i][1]);
+            row++;
+        }
+    }
+
+    // Add sales by client type
+    var clientTypeIndex = salesAnalysisData.findIndex(
+        (row) => row[0] === "Sales by Client Type:",
     );
-    addSection(
-        "Sales by Client Type:",
-        salesAnalysisData.findIndex(
-            (row) => row[0] === "Sales by Client Type:",
-        ),
+    if (clientTypeIndex !== -1) {
+        reportSheet.getRange("A" + (row + 2)).setValue("Sales by Client Type:");
+        row += 3;
+        for (
+            var i = clientTypeIndex + 1;
+            i < salesAnalysisData.length && salesAnalysisData[i][0] !== "";
+            i++
+        ) {
+            reportSheet.getRange(row, 1).setValue(salesAnalysisData[i][0]);
+            reportSheet.getRange(row, 2).setValue(salesAnalysisData[i][1]);
+            row++;
+        }
+    }
+
+    // Add sales by material category
+    var materialCategoryIndex = salesAnalysisData.findIndex(
+        (row) => row[0] === "Sales by Material Category:",
     );
-    addSection(
-        "Sales by Material Category:",
-        salesAnalysisData.findIndex(
-            (row) => row[0] === "Sales by Material Category:",
-        ),
+    if (materialCategoryIndex !== -1) {
+        reportSheet
+            .getRange("A" + (row + 2))
+            .setValue("Sales by Material Category:");
+        row += 3;
+        for (
+            var i = materialCategoryIndex + 1;
+            i < salesAnalysisData.length && salesAnalysisData[i][0] !== "";
+            i++
+        ) {
+            reportSheet.getRange(row, 1).setValue(salesAnalysisData[i][0]);
+            reportSheet.getRange(row, 2).setValue(salesAnalysisData[i][1]);
+            row++;
+        }
+    }
+
+    // Add productive hours
+    var productiveHoursIndex = salesAnalysisData.findIndex(
+        (row) => row[0] === "Productive Hours (Monthly):",
     );
+    if (productiveHoursIndex !== -1) {
+        reportSheet.getRange("A" + (row + 2)).setValue("Productive Hours:");
+        row += 3;
+        for (
+            var i = productiveHoursIndex + 1;
+            i < salesAnalysisData.length && salesAnalysisData[i][0] !== "";
+            i++
+        ) {
+            reportSheet.getRange(row, 1).setValue(salesAnalysisData[i][0]);
+            reportSheet.getRange(row, 2).setValue(salesAnalysisData[i][1]);
+            row++;
+        }
+    }
 
     // Apply formatting
-    var lastRow = reportSheet.getLastRow();
-    var lastColumn = reportSheet.getLastColumn();
-    if (lastRow > 0 && lastColumn > 0) {
-        reportSheet
-            .getRange(1, 1, lastRow, lastColumn)
-            .setNumberFormat("#,##0.00");
-        reportSheet.getRange(1, 1, lastRow, lastColumn).applyRowBanding();
-        reportSheet.autoResizeColumns(1, lastColumn);
-    }
+    reportSheet.getRange(1, 1, row, 2).setNumberFormat("#,##0.00");
+    reportSheet.getRange(1, 1, row, 2).applyRowBanding();
+    reportSheet.autoResizeColumns(1, 2);
+
+    // Print the report
+    var printOptions = {
+        size: SpreadsheetApp.PaperSize.A4,
+        orientation: SpreadsheetApp.PageOrientation.PORTRAIT,
+        fitToPage: true,
+        printNotes: false,
+        printGridlines: false,
+        repeatTopRows: 2,
+    };
+
+    reportSheet.setPageBreak(row, 1);
 
     SpreadsheetApp.getUi().alert(
         "Report generated successfully! Check the 'Report' sheet. You can now print or export the report as needed.",
@@ -1354,6 +1393,7 @@ function generateReports() {
 }
 
 // Auxiliary functions
+
 function getSettings() {
     var settings = {};
     var keys = [

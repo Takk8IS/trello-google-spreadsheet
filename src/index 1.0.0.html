@@ -17,6 +17,10 @@
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
             rel="stylesheet"
         />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@material-design-icons/font@1.0.0/iconfont.min.css"
+        />
         <style>
             body {
                 font-family: "Inter", sans-serif;
@@ -212,7 +216,6 @@
                     showMessage("Error loading settings: " + error, "error");
                 })
                 .getSettings();
-
             // Save settings
             document
                 .getElementById("settingsForm")
@@ -256,7 +259,6 @@
                         })
                         .saveSettings(settings);
                 });
-
             function showMessage(message, type) {
                 var messageElement = document.getElementById("message");
                 messageElement.textContent = message;
